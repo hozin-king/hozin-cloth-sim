@@ -52,5 +52,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "HozinClothSim-$VERSION.apk" --clobber
           else
-            gh release create "$TAG" "HozinClothSim-$VERSION.apk" --title "Hozin Cloth Sim $VERSION" --notes "Simulasi kain jatuh ke bola emas (verlet cloth, native Kotlin + OpenGL ES + C++). Slider face 1-65536, orbit kamera, angin, warna kain/bola, FPS. Full offline, tanpa WebView."
+            gh release create "$TAG" "HozinClothSim-$VERSION.apk" --title "Hozin Cloth Sim $VERSION" --notes "Simulasi kain jatuh ke bola emas (verlet cloth, native Kotlin + OpenGL ES + C++). Slider face 1-262144 (18 tingkat, Ekstrem 262144), background gua bawah tanah (toggle Gua/Gelap), orbit kamera, angin, warna kain/bola, FPS. Perbaikan: bola tidak lagi tembus kain (tabrakan segitiga + offset), emas kuning jelas, tombol warna tidak terjepit. Full offline, tanpa WebView."
           fi

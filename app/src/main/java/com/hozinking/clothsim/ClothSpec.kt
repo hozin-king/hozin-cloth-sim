@@ -9,7 +9,12 @@ import kotlin.math.sqrt
  */
 object ClothSpec {
 
-    val FACE_LEVELS = intArrayOf(1, 4, 16, 64, 256, 1024, 4096, 65536)
+    // 18 tingkat: 1, 4, 9, 16, 36, 64, 100, 256, 400, 900, 1024, 1600,
+    // 2500, 4096, 10000, 16384, 65536, 262144 (= grid 1²..512²).
+    val FACE_LEVELS = intArrayOf(
+        1, 4, 9, 16, 36, 64, 100, 256, 400, 900,
+        1024, 1600, 2500, 4096, 10000, 16384, 65536, 262144
+    )
 
     fun segmentsForFaces(faces: Int): Int = sqrt(faces.toDouble()).toInt()
 
@@ -19,7 +24,14 @@ object ClothSpec {
 
     /** Iterasi constraint adaptif — cermin dari cloth.cpp. */
     fun iterationsForSegments(segments: Int): Int =
-        if (segments <= 16) 4 else if (segments <= 64) 3 else 2
+        if (segments <= 16) 4 else if (segments <= 64) 3 else 4
+
+    /** Label berat di slider face. */
+    fun faceLabelSuffix(faces: Int): String = when {
+        faces >= 262144 -> " — Ekstrem, sangat berat"
+        faces >= 65536 -> " — Ultra, berat"
+        else -> ""
+    }
 
     // ---- Cermin matematika C++ (untuk unit test) ----
 
@@ -62,8 +74,11 @@ object ClothSpec {
     )
 
     val BALL_COLORS = listOf(
-        ColorPreset("Emas", floatArrayOf(0.95f, 0.72f, 0.15f)),
+        // Emas harus kuning metalik yang jelas — v1.0 (0.95, 0.72, 0.15)
+        // tampil oranye di sisi gelap karena ambient 0.35 menekan channel
+        // hijau; naikkan hijau + ambient bola di renderer.
+        ColorPreset("Emas", floatArrayOf(1.00f, 0.84f, 0.30f)),
         ColorPreset("Perak", floatArrayOf(0.80f, 0.82f, 0.86f)),
-        ColorPreset("Tembaga", floatArrayOf(0.85f, 0.45f, 0.22f))
+        ColorPreset("Tembaga", floatArrayOf(0.78f, 0.38f, 0.16f))
     )
 }

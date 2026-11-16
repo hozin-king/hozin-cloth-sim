@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var windLabel: TextView
     private lateinit var playButton: Button
 
-    private var faceLevel: Int = 5 // default 1024 face (16² grid sudah terlihat melapis)
+    private var faceLevel: Int = 10 // default 1024 face
     private var lastPinchDist: Float = 0f
     private val pointers = HashMap<Int, Pair<Float, Float>>()
 
@@ -36,6 +36,9 @@ class MainActivity : AppCompatActivity() {
 
         glView = findViewById(R.id.glView)
         glView.setEGLContextClientVersion(3)
+        // Depth 24-bit eksplisit: config default bisa 16-bit -> kain yang
+        // menempel di bola z-fighting (garis coklat radial di Face 4096).
+        glView.setEGLConfigChooser(8, 8, 8, 0, 24, 0)
         glView.setRenderer(renderer)
         glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
         glView.setOnTouchListener { _, ev -> onGlTouch(ev) }
@@ -51,6 +54,11 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<Button>(R.id.btnReset).setOnClickListener {
             engine.reset()
+        }
+        val bgButton = findViewById<Button>(R.id.btnBg)
+        bgButton.setOnClickListener {
+            renderer.caveMode = !renderer.caveMode
+            bgButton.text = if (renderer.caveMode) "⛏ Gua" else "🌑 Gelap"
         }
 
         val faceBar = findViewById<SeekBar>(R.id.faceBar)
@@ -92,8 +100,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateFaceLabel() {
         val faces = ClothSpec.FACE_LEVELS[faceLevel]
-        val ultra = if (faces >= 65536) " — Ultra, berat" else ""
-        faceLabel.text = "Face: $faces$ultra"
+        faceLabel.text = "Face: $faces${ClothSpec.faceLabelSuffix(faces)}"
     }
 
     private fun applyFaceLevel() {
@@ -113,6 +120,15 @@ class MainActivity : AppCompatActivity() {
             val b = Button(this)
             b.text = preset.name
             b.textSize = 12f
+            // Bagi lebar rata (weight 1): v1.0 tombol terakhir (HITAM)
+            // terjepit di tepi kanan sampai teksnya vertikal.
+            val lp = android.widget.LinearLayout.LayoutParams(
+                0, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+            )
+            lp.setMargins(2, 0, 2, 0)
+            b.layoutParams = lp
+            b.minWidth = 0
+            b.setPadding(4, 0, 4, 0)
             b.setOnClickListener { onPick(preset) }
             row.addView(b)
         }

@@ -33,6 +33,7 @@ public:
 private:
     int n_;
     int iterations_;
+    float friction_;
     std::vector<Vec3> pos_;
     std::vector<Vec3> prev_;
     std::vector<Vec3> normals_;
@@ -45,6 +46,14 @@ private:
 
     void satisfyConstraints();
     void collide();
+    void collideTriangles();
+    void collideEdgeMidpoint(uint32_t a, uint32_t b);
+    bool pointInTriangle(const Vec3& p, const Vec3& a, const Vec3& b,
+                         const Vec3& c);
+    // Geser vertex keluar sepanjang dir sejauh push + gesekan (cermin
+    // perilaku tabrakan partikel).
+    void pushVertices(const uint32_t* ids, int count, const Vec3& dir, float push);
+    void applyFriction(int id, const Vec3& normal);
     void computeNormals();
 };
 
